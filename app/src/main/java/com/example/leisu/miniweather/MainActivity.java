@@ -92,17 +92,29 @@ public class MainActivity extends Activity implements View.OnClickListener {
         windTv = (TextView) findViewById(R.id.feng);
         weatherImg = (ImageView) findViewById(R.id.wea_image);
 
-        city_name_Tv.setText("N/A");
-        cityTv.setText("N/A");
-        timeTv.setText("N/A");
-        humidityTv.setText("N/A");
-        pmDataTv.setText("N/A");
-        pmQualityTv.setText("N/A");
-        weekTv.setText("N/A");
-        temperatureTv.setText("N/A");
-        tempTv.setText("N/A");
-        climateTv.setText("N/A");
-        windTv.setText("N/A");
+        city_name_Tv.setText("北京天气");
+        cityTv.setText("北京");
+        timeTv.setText("今天00:00发布");
+        humidityTv.setText("湿度:10%");
+        pmDataTv.setText("20");
+        pmQualityTv.setText("优");
+        weekTv.setText("今天 星期三");
+        temperatureTv.setText("6℃~17℃");
+        tempTv.setText("温度:10℃");
+        climateTv.setText("晴");
+        windTv.setText("微风");
+
+        SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+        String cityCode = sharedPreferences.getString("main_city_code", "101010100");
+        Log.d("myWeather", cityCode);
+
+        if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE) {
+            Log.d("myWeather", "网络OK");
+            queryWeatherCode(cityCode);
+        } else {
+            Log.d("myWeather", "网络断开");
+            Toast.makeText(MainActivity.this, "网络断开!", Toast.LENGTH_LONG).show();
+        }
     }
 
 
@@ -123,6 +135,21 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
             if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE) {
                 Log.d("myWeather", "网络OK");
+                queryWeatherCode(cityCode);
+            } else {
+                Log.d("myWeather", "网络断开");
+                Toast.makeText(MainActivity.this, "网络断开!", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        if (view.getId() == R.id.wea_image) {
+            SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+            String cityCode = sharedPreferences.getString("main_city_code", "101010100");
+            Log.d("myWeather", cityCode);
+
+            if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE) {
+                Log.d("myWeather", "网络OK");
+                Toast.makeText(MainActivity.this, "网络OK!", Toast.LENGTH_LONG).show();
                 queryWeatherCode(cityCode);
             } else {
                 Log.d("myWeather", "网络断开");
@@ -292,6 +319,19 @@ public class MainActivity extends Activity implements View.OnClickListener {
         temperatureTv.setText(todayWeather.getLow()+"~"+todayWeather.getHigh());
         climateTv.setText(todayWeather.getType());
         windTv.setText("风力:"+todayWeather.getFengli());
+
+        String init_city_name_Tv = todayWeather.getCity()+"天气";
+        String init_cityTv = todayWeather.getCity();
+        String init_timeTv = todayWeather.getUpdatetime()+ "发布";
+        String init_humidityTv = "湿度："+todayWeather.getShidu();
+        String init_tempTv = "温度："+todayWeather.getWendu();
+        String init_pmDataTv = todayWeather.getPm25();
+        String init_pmQualityTv = todayWeather.getQuality();
+        String init_weekTv = todayWeather.getDate();
+        String init_temperatureTv = todayWeather.getLow()+"~"+todayWeather.getHigh();
+        String init_climateTv = todayWeather.getType();
+        String init_windTv = "风力:"+todayWeather.getFengli();
+
         if (Integer.parseInt(todayWeather.getPm25()) >= 0 && Integer.parseInt(todayWeather.getPm25()) <= 50) {
             pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
         }else if (Integer.parseInt(todayWeather.getPm25()) >= 51 && Integer.parseInt(todayWeather.getPm25()) <= 100) {
