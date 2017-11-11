@@ -34,6 +34,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     private static final int UPDATE_TODAY_WEATHER = 1;
 
+    private String updateCityCode;
+    TodayWeather todayWeather = null;
+
     private ImageView mUpdateBtn;
 
     private ImageView mCitySelect;
@@ -46,7 +49,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
                 case UPDATE_TODAY_WEATHER:
-                    updateTodayWeather((TodayWeather) msg.obj);
+                    Log.d("terror+m.obj", msg.obj.toString());
+                    updateTodayWeather((TodayWeather)msg.obj);
                     break;
                 default:
                     break;
@@ -75,6 +79,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
         mCitySelect.setOnClickListener(this);
 
         initView();
+
+        Intent intent = this.getIntent();
+        updateCityCode = intent.getStringExtra("cityCode");
+        if(updateCityCode != "-1"){
+            queryWeatherCode(updateCityCode);
+        }
     }
 
     void initView(){
@@ -123,7 +133,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         if (view.getId() == R.id.title_city_manager) {
             Intent i = new Intent(this, SelectCity.class);
-            //startActivity(i);
+            startActivity(i);
             startActivityForResult(i,1);
         }
 
@@ -175,12 +185,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     private void queryWeatherCode(String cityCode)  {
         final String address = "http://wthrcdn.etouch.cn/WeatherApi?citykey=" + cityCode;
-        Log.d("myWeather", address);
+        Log.d("myWeather_add", address);
         new Thread(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection con=null;
-                TodayWeather todayWeather = null;
                 try{
                     URL url = new URL(address);
                     con = (HttpURLConnection)url.openConnection();
@@ -199,13 +208,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     Log.d("myWeather", responseStr);
                     todayWeather = parseXML(responseStr);
                     if (todayWeather != null) {
-                        Log.d("myWeather", todayWeather.toString());
-
+                        Log.d("terror:todayWeather.toS", todayWeather.toString());
                         Message msg =new Message();
                         msg.what = UPDATE_TODAY_WEATHER;
-                        msg.obj=todayWeather;
+                        msg.obj = todayWeather;
                         mHandler.sendMessage(msg);
                     }
+
 
                 }catch (Exception e){
                     e.printStackTrace();
@@ -334,15 +343,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         if (Integer.parseInt(todayWeather.getPm25()) >= 0 && Integer.parseInt(todayWeather.getPm25()) <= 50) {
             pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
-        }else if (Integer.parseInt(todayWeather.getPm25()) >= 51 && Integer.parseInt(todayWeather.getPm25()) <= 100) {
+        } else if (Integer.parseInt(todayWeather.getPm25()) >= 51 && Integer.parseInt(todayWeather.getPm25()) <= 100) {
             pmImg.setImageResource(R.drawable.biz_plugin_weather_51_100);
-        }else if(Integer.parseInt(todayWeather.getPm25()) >= 101 && Integer.parseInt(todayWeather.getPm25()) <= 150) {
+        } else if (Integer.parseInt(todayWeather.getPm25()) >= 101 && Integer.parseInt(todayWeather.getPm25()) <= 150) {
             pmImg.setImageResource(R.drawable.biz_plugin_weather_101_150);
-        }else if(Integer.parseInt(todayWeather.getPm25()) >= 151 && Integer.parseInt(todayWeather.getPm25()) <= 200) {
+        } else if (Integer.parseInt(todayWeather.getPm25()) >= 151 && Integer.parseInt(todayWeather.getPm25()) <= 200) {
             pmImg.setImageResource(R.drawable.biz_plugin_weather_151_200);
-        }else if(Integer.parseInt(todayWeather.getPm25()) >= 201 && Integer.parseInt(todayWeather.getPm25()) <= 300) {
+        } else if (Integer.parseInt(todayWeather.getPm25()) >= 201 && Integer.parseInt(todayWeather.getPm25()) <= 300) {
             pmImg.setImageResource(R.drawable.biz_plugin_weather_201_300);
-        }else {
+        } else {
             pmImg.setImageResource(R.drawable.biz_plugin_weather_greater_300);
         }
         switch(todayWeather.getType()){

@@ -18,14 +18,14 @@ public class TodayWeather {
     private String updatetime;
     private String wendu;
     private String shidu;
-    private String pm25;
+    private String pm25 = "100";
     private String quality;
     private String fengxiang;
     private String fengli;
     private String date;
     private String high;
     private String low;
-    private String type;
+    private String type = "晴";
 
     public String getCity() {
         return city;
