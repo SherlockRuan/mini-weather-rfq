@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 
@@ -22,6 +23,10 @@ import java.util.ArrayList;
  */
 
 public class SelectCity extends Activity implements View.OnClickListener {
+    private ImageView backBtn;
+    private ListView getCityListLv;
+    private EditText searchEt;
+    private ImageView searchBtn;
 
     private ImageView mBackBtn;
     private ListView cityListLv;
@@ -40,12 +45,19 @@ public class SelectCity extends Activity implements View.OnClickListener {
         mBackBtn = (ImageView)findViewById(R.id.title_back);
         mBackBtn.setOnClickListener(this);
 
+        searchEt = (EditText)findViewById(R.id.select_input);
+        searchBtn = (ImageView)findViewById(R.id.search_city_b);
+        searchBtn.setOnClickListener(this);
+
         mApplication = (MyApplication)getApplication();
         mCityList = mApplication.getCityList();
         mArrayList = new ArrayList<String>();
         for(int i = 0;i<mCityList.size();i++) {
+            String number = Integer.toString(i + 1);
+            String numCity = mCityList.get(i).getNumber();
+            String proName = mCityList.get(i).getProvince();
             String cityName = mCityList.get(i).getCity();
-            mArrayList.add(cityName);
+            mArrayList.add("NO." + number + " : " + numCity + "-" + proName + "-" + cityName);
         }
         cityListLv = (ListView)findViewById(R.id.selectcity_lv);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(SelectCity.this,android.R.layout.simple_expandable_list_item_1,mArrayList);
@@ -74,6 +86,27 @@ public class SelectCity extends Activity implements View.OnClickListener {
                 //setResult(RESULT_OK,intent);
                 //finish();
                 break;
+            case R.id.search_city_b:
+                String citycode = searchEt.getText().toString();
+                Log.d("Search",citycode);
+                ArrayList<String>mSearchList = new ArrayList<String>();
+                for(int i = 0; i < mCityList.size();i++) {
+                    String number = Integer.toString(i + 1);
+                    String numCity = mCityList.get(i).getNumber();
+                    String proName = mCityList.get(i).getProvince();
+                    String cityName = mCityList.get(i).getCity();
+                    if (numCity.equals(citycode)) {
+                        mSearchList.add("NO." + number + " : " + numCity + "-" + proName + "-" + cityName);
+                        Log.d("upcity3", "NO." + number + " : " + numCity + "-" + proName + "-" + cityName);
+                    }
+                    ArrayAdapter<String>adapter = new ArrayAdapter<String>(SelectCity.this,android.R.layout.simple_expandable_list_item_1,mSearchList);
+                    cityListLv.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                }
+                Intent intent1 = new Intent(this,MainActivity.class);
+                intent1.putExtra("cityCode",citycode);
+                Log.d("upcitycc1",updateCityCode);
+                startActivity(intent1);
             default:
                 break;
         }

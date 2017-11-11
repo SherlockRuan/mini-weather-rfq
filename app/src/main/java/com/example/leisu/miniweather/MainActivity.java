@@ -82,6 +82,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         Intent intent = this.getIntent();
         updateCityCode = intent.getStringExtra("cityCode");
+        //Log.d("upcityccc", updateCityCode);
         if(updateCityCode != "-1"){
             queryWeatherCode(updateCityCode);
         }
